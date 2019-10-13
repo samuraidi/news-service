@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="1" author="sam">
+        <sql>
+            CREATE TABLE user (
+            user_id BIGINT NOT NULL AUTO_INCREMENT,
+            username VARCHAR(255) NOT NULL,
+            pass VARCHAR(255) NOT NULL,
+            name VARCHAR (255) NOT NULL,
+            CONSTRAINT PK_id PRIMARY KEY (user_id)
+            );
+
+            CREATE TABLE role (
+            role_id BIGINT NOT NULL AUTO_INCREMENT,
+            role_name VARCHAR(255) NOT NULL,
+            CONSTRAINT PK_id PRIMARY KEY (role_id)
+            );
+
+            CREATE TABLE user_role (
+            user_id BIGINT NOT NULL,
+            role_id BIGINT NOT NULL,
+            PRIMARY KEY (user_id, role_id),
+            key role_id (role_id),
+            CONSTRAINT user_role_ibfk_1
+            FOREIGN KEY (user_id) REFERENCES user (user_id),
+            CONSTRAINT user_role_ibfk2
+            FOREIGN KEY (role_id) REFERENCES role (role_id)
+            );
+
+            CREATE TABLE bild (
+            bild_id BIGINT NOT NULL,
+            picture_name VARCHAR(255) NOT NULL,
+            pic_data VARCHAR(255) NOT NULL,
+            metadata LONGBLOB,
+            CONSTRAINT PK_id PRIMARY KEY (bild_id)
+            );
+
+            CREATE TABLE news (
+            news_id BIGINT NOT NULL,
+            title VARCHAR(255) NOT NULL,
+            text VARCHAR(255) NOT NULL,
+            date_created DATETIME DEFAULT CURRENT_TIMESTAMP(),
+            picture_link VARCHAR(255) NOT NULL,
+            valid_to DATETIME DEFAULT CURRENT_TIMESTAMP(),
+            valid_from DATETIME DEFAULT CURRENT_TIMESTAMP(),
+            read_status BIGINT DEFAULT NULL,
+            bild_id BIGINT DEFAULT NULL,
+            CONSTRAINT PK_id PRIMARY KEY (news_id),
+            CONSTRAINT FK_bild FOREIGN KEY (bild_id)
+            REFERENCES bild (bild_id)
+            );
+
+            CREATE TABLE news_role (
+            news_id BIGINT NOT NULL,
+            role_id BIGINT NOT NULL,
+            PRIMARY KEY (news_id, role_id),
+            key role_id (role_id),
+            CONSTRAINT news_role_ibfk_1
+            FOREIGN KEY (news_id) REFERENCES news (news_id),
+            CONSTRAINT news_role_ibfk2
+            FOREIGN KEY (role_id) REFERENCES role (role_id)
+            );
+
+            CREATE TABLE read_status (
+            read_status_id BIGINT NOT NULL,
+            user_id BIGINT DEFAULT NULL,
+            read_date DATETIME DEFAULT CURRENT_TIMESTAMP(),
+            news_id BIGINT DEFAULT NULL,
+            CONSTRAINT PK_id PRIMARY KEY (read_status_id),
+            KEY fk_user_idx (user_id),
+            CONSTRAINT fk_user
+            FOREIGN KEY (user_id)
+            REFERENCES user (user_id),
+            KEY fk_news_idx (news_id),
+            CONSTRAINT fk_news
+            FOREIGN KEY (news_id)
+            REFERENCES news (news_id)
+            );
+
+        </sql>
+        <rollback>
+            DROP TABLE user;
+            DROP TABLE role;
+            DROP TABLE user_role;
+            DROP TABLE news_role;
+            DROP TABLE read_status;
+        </rollback>
+    </changeSet>
+    </databaseChangeLog>
