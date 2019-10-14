@@ -24,8 +24,8 @@ public class BildService {
 
     private ResourceLoader resourceLoader;
 
-    public Resource findOneImage(String filename) {
-        return resourceLoader.getResource("file:" + UPLOAD_ROOT + "/" + filename);
+    public Resource findOneImage(String path, String name) {
+        return resourceLoader.getResource("file:" + path + "/" + name);
     }
 
     public void createBild(MultipartFile file) throws IOException{

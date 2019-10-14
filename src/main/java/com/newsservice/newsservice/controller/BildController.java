@@ -1,5 +1,7 @@
 package com.newsservice.newsservice.controller;
 
+import com.newsservice.newsservice.model.Bild;
+import com.newsservice.newsservice.model.News;
 import com.newsservice.newsservice.service.BildService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -25,17 +27,19 @@ public class BildController {
 
     @RequestMapping(method = RequestMethod.GET, value="{filename:.+}/raw")
     @ResponseBody
-    public ResponseEntity<?> oneRawBild(@PathVariable String filename) {
-
+//    public ResponseEntity<?> oneRawBild(@PathVariable String filename) {
+        public ResponseEntity<?> oneRawBild(@PathVariable News news, @PathVariable Bild bild) {
+            String path = news.getPictureLink();
+            String name = bild.getPictureName();
         try {
-            Resource file = bildService.findOneImage(filename);
+            Resource file = bildService.findOneImage(path, name);
             return ResponseEntity.ok()
                     .contentLength(file.contentLength())
                     .contentType(MediaType.IMAGE_JPEG)
                     .body(new InputStreamResource(file.getInputStream()));
         } catch (IOException e) {
             return ResponseEntity.badRequest()
-                    .body("Couldn't find " + filename + " => " + e.getMessage());
+                    .body("Couldn't find " + name + " => " + e.getMessage());
         }
     }
 
